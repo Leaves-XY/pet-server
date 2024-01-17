@@ -1,0 +1,85 @@
+package com.yexingyi.service;
+
+import com.yexingyi.dao.UserDao;
+import com.yexingyi.entity.User;
+import com.yexingyi.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * @author 叶倖燚
+ */
+@Service
+@Transactional(rollbackFor = Exception.class)
+public class UserServiceImpl implements UserDetailsService {
+
+    @Autowired
+    private UserDao userDao;
+
+
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userDao.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("用户名不存在");
+        }
+        return user;
+    }
+
+
+    public int userReg(String username, String password) {
+        if (userDao.findByUsername(username) != null) {
+            return -1;
+        }
+        String encode = passwordEncoder.encode(password);
+        return userDao.saveUser(username, encode);
+    }
+
+    public boolean updateUserPassword(String oldPassword, String password, Integer userId) {
+        User user = userDao.findUserById(userId);
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+            String encodedPassword = passwordEncoder.encode(password);
+            Integer result = userDao.updatePassword(userId, encodedPassword);
+            return result >= 1;
+        }
+        return false;
+    }
+
+    public int updateUser(User user) {
+        user.setUpdateAt(LocalDate.now().toString());
+        return userDao.updateUser(user);
+    }
+
+    public List<User> getUserByName(String name) {
+        return userDao.getUserByName(UserUtils.getCurrentUser().getId(), name);
+    }
+
+    public int getUserCount(String username) {
+        return userDao.getUserCount(username);
+    }
+
+    public int deleteUsers(User user) {
+        return userDao.deleteUser(user.getId());
+    }
+
+    public void registerUser(User user) {
+
+        user.setEnabled(true);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreateAt(LocalDate.now().toString());
+        user.setUpdateAt(LocalDate.now().toString());
+        userDao.registerUser(user);
+    }
+}

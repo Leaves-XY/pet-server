@@ -1,0 +1,52 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: PetAdmin
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dormadmin?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    username: root
+    password: YeXingyi123!
+    hikari:
+      maximum-pool-size: 100
+      idleTimeout: 600000
+      connectionTimeout: 30000
+      maxLifetime: 1800000
+#  redis:
+#    host: localhost
+#    port: 6379
+#    password:
+#    database: 7
+#    lettuce:
+#      pool:
+#        max-active: 8
+#        max-wait: -1
+#        max-idle: 8
+#        min-idle: 0
+#    timeout: 5000
+
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+
+logging:
+  level:
+    com.yexingyi.dao: debug
+
+pet:
+  aliyun:
+    accessKeyId: LTAI5tFp8qRqigbEDRAQaDki
+    accessSecret: kHLnn5vVgDPO7175MsvCDYQbZ8MEN0
