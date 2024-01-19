@@ -1,8 +1,11 @@
 package com.yexingyi.common;
 
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.tea.TeaException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SendSms {
 
     @Value("${pet.aliyun.accessKeyId}")
@@ -18,6 +21,7 @@ public class SendSms {
      * @throws Exception
      */
     public static com.aliyun.dysmsapi20170525.Client createClient(String accessKeyId, String accessKeySecret) throws Exception {
+
         com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config()
                 // 必填，您的 AccessKey ID
                 .setAccessKeyId(accessKeyId)
@@ -35,11 +39,12 @@ public class SendSms {
                 .setSignName("叶倖燚的项目练习")
                 .setTemplateCode("SMS_460810926")
                 .setPhoneNumbers(phone)
-                .setTemplateParam("简历解析系统验证码为:{\"code\":\""+code+"\"}");
+                .setTemplateParam("{\"code\":\"" + code + "\"}");
         com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
         try {
             // 复制代码运行请自行打印 API 的返回值
-            client.sendSmsWithOptions(sendSmsRequest, runtime);
+            SendSmsResponse res=client.sendSmsWithOptions(sendSmsRequest, runtime);
+            System.out.println(res.getBody());
         } catch (TeaException error) {
             // 如有需要，请打印 error
             com.aliyun.teautil.Common.assertAsString(error.message);
