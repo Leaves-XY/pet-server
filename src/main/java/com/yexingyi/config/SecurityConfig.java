@@ -3,7 +3,7 @@ package com.yexingyi.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yexingyi.entity.User;
 import com.yexingyi.model.ResponseMsg;
-import com.yexingyi.service.UserServiceImpl;
+import com.yexingyi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     CustomUrlDecisionManager customUrlDecisionManager;
 
     @Autowired
-    UserServiceImpl userService;
+    UserService userService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().antMatchers("/css/**", "/js/**", "/index.html", "/img/**", "/fonts/**", "/favicon.ico",
-                "/api/verifyCode");
+                "/pet/verifyCode","/pet/login/**");
     }
 
     @Bean
@@ -98,15 +98,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }
         );
         loginFilter.setAuthenticationManager(authenticationManagerBean());
-        loginFilter.setFilterProcessesUrl("/api/doLogin");
+        loginFilter.setFilterProcessesUrl("/pet/doLogin");
         return loginFilter;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
-                .antMatchers("/api/repair/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/pet/**").permitAll()
+                .antMatchers("/pet/repair/**").permitAll()
                 .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
                     @Override
                     public <O extends FilterSecurityInterceptor> O postProcess(O object) {
@@ -117,7 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 })
                 .and()
                 .logout()
-                .logoutUrl("/api/logout")
+                .logoutUrl("/pet/logout")
                 .logoutSuccessHandler((req, resp, authentication) -> {
                             resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             resp.setCharacterEncoding("UTF-8");

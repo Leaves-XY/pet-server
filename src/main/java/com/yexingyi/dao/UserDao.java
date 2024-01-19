@@ -1,8 +1,11 @@
 package com.yexingyi.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yexingyi.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,26 +13,22 @@ import java.util.List;
 /**
  * @author 叶倖燚
  */
-@Repository
-public interface UserDao {
+@Mapper
+public interface UserDao extends BaseMapper<User> {
 
-    int saveUser(String username, String password);
+    // MyBatis-Plus 的 BaseMapper 已经提供了大部分 CRUD 方法，如 insert (saveUser), selectById (findUserById), updateById (updateUser), deleteById (deleteUser)
+    // 自定义的方法可以保留，特别是那些复杂的查询
 
+    @Select("SELECT * FROM user WHERE id = #{id}")
     User findByUsername(String username);
 
+    @Update("UPDATE user SET password = #{password} WHERE id = #{userId}")
+    Integer updatePassword(Integer userId, String password);
 
-    User findUserById(Integer userId);
+    @Select("SELECT * FROM user WHERE name = #{name}")
+    List<User> getUserByName(String name);
 
-    Integer updatePassword(@Param("userId") Integer userId, @Param("password") String password);
-
-    int updateUser(User user);
-
-    List<User> getUserByName(@Param("userId") Integer id, @Param("name") String name);
-
-    int deleteUser(Integer userId);
-
-    void registerUser(User user);
-
+    // 保留复杂或特定的 SQL 查询
     @Select("SELECT COUNT(*) FROM user WHERE username = #{username}")
     int getUserCount(String username);
 }

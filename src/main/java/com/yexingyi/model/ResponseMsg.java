@@ -17,19 +17,19 @@ public class ResponseMsg {
     }
 
     public static ResponseMsg ok(String msg) {
-        return new ResponseMsg(200, msg, null);
+        return new ResponseMsg(1, msg, null);
     }
 
     public static ResponseMsg ok(String msg, Object obj) {
-        return new ResponseMsg(200, msg, obj);
+        return new ResponseMsg(1, msg, obj);
     }
 
     public static ResponseMsg error(String msg) {
-        return new ResponseMsg(500, msg, null);
+        return new ResponseMsg(0, msg, null);
     }
 
     public static ResponseMsg error(String msg, Object obj) {
-        return new ResponseMsg(500, msg, obj);
+        return new ResponseMsg(0, msg, obj);
     }
 
     private ResponseMsg() {

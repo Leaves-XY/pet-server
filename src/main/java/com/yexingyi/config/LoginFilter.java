@@ -1,7 +1,6 @@
 package com.yexingyi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.code.kaptcha.Constants;
 import com.yexingyi.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author 叶倖燚
+ * 自定义登录过滤器，用于处理用户登录请求
  */
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -29,21 +28,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (!"POST".equals(request.getMethod())) {
-            throw new AuthenticationServiceException(
-                    "Authentication method not supported: " + request.getMethod());
+            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
-        String verifyCode = (String) request.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
-        request.getSession().removeAttribute(Constants.KAPTCHA_SESSION_KEY);
+
+        // 获取验证码
+        // String verifyCode = (String) request.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+        // request.getSession().removeAttribute(Constants.KAPTCHA_SESSION_KEY);
+
         if (request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            // 处理 JSON 格式的登录请求
             Map<String, String> loginData = new HashMap<>(16);
             try {
                 loginData = new ObjectMapper().readValue(request.getInputStream(), Map.class);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                String code = loginData.get("code");
-                checkCode(code, verifyCode);
+                // 验证验证码
+                // String code = loginData.get("code");
+                // checkCode(code, verifyCode);
             }
+
+            // 获取用户名和密码
             String username = loginData.get(getUsernameParameter());
             String password = loginData.get(getPasswordParameter());
             if (username == null) {
@@ -53,23 +58,34 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 password = "";
             }
             username = username.trim();
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-                    username, password);
+
+            // 创建身份验证请求
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
             setDetails(request, authRequest);
+
+            // 注册新会话
             User user = new User();
             user.setUsername(username);
             sessionRegistry.registerNewSession(request.getSession(true).getId(), user);
+
             return this.getAuthenticationManager().authenticate(authRequest);
         } else {
-            checkCode(request.getParameter("code"), verifyCode);
+            // 处理普通表单提交的登录请求，继续调用父类的方法
+            // checkCode(request.getParameter("code"), verifyCode);
             return super.attemptAuthentication(request, response);
         }
     }
 
-    public void checkCode(String code, String verifyCode) {
-        if (code == null || verifyCode == null || "".equals(code) || !verifyCode.equalsIgnoreCase(code)) {
-            //验证码不正确
-            throw new AuthenticationServiceException("验证码不正确");
-        }
-    }
+    /**
+     * 验证验证码是否正确
+     *
+     * @param code       用户输入的验证码
+     * @param verifyCode 系统生成的验证码
+     */
+    // public void checkCode(String code, String verifyCode) {
+    //     if (code == null || verifyCode == null || "".equals(code) || !verifyCode.equalsIgnoreCase(code)) {
+    //         // 验证码不正确
+    //         throw new AuthenticationServiceException("验证码不正确");
+    //     }
+    // }
 }

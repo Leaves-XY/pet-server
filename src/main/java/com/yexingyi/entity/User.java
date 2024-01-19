@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,14 +17,11 @@ import java.util.List;
  * @author 叶倖燚
  */
 @Data
-public class User implements UserDetails {
-    /**
-     * 用户ID
-     */
-    private Integer id;
+public class User extends BaseEntity  implements UserDetails {
+
 
     /**
-     * 姓名
+     * 账号名
      */
     private String name;
 
@@ -38,7 +36,7 @@ public class User implements UserDetails {
     private String mail;
 
     @Getter(value = AccessLevel.NONE)
-    private Boolean enabled;
+    private Boolean enabled=true;
 
     /**
      * 用户名
@@ -50,11 +48,22 @@ public class User implements UserDetails {
      */
     private String password;
 
+    /**
+     * 显示的用户名
+     */
+    private String nickName;
+
+    /**
+     * 头像
+     */
+    private String avatar;
+
+    /**
+     * 性别
+     */
+    private String gender;
+
     private String remark;
-
-    private String createAt;
-
-    private String updateAt;
 
     private static final long serialVersionUID = 1L;
 
@@ -94,7 +103,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return enabled;
     }
-
-
 
 }
