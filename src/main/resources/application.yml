@@ -7,9 +7,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/dormadmin?serverTimezone=GMT%2B8&characterEncoding=utf-8
-    username: root
-    password: YeXingyi123!
+    url: jdbc:mysql://39.105.187.217:3306/pet?serverTimezone=GMT%2B8&characterEncoding=utf-8
+    username: pet
+    password: petpetpet
     hikari:
       maximum-pool-size: 100
       idleTimeout: 600000
@@ -31,7 +31,7 @@ spring:
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
-    map-underscore-to-camel-case: true
+    map-underscore-to-camel-case: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:

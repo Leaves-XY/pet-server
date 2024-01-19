@@ -11,8 +11,8 @@
     <groupId>com.kaiyu</groupId>
     <artifactId>dorm-admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>dorm-admin</name>
-    <description>DormAdmin</description>
+    <name>pet-server</name>
+    <description>PetServer</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

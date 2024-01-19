@@ -1,6 +1,9 @@
 package com.yexingyi.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import nonapi.io.github.classgraph.json.Id;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,6 +12,7 @@ import java.util.Date;
 
 @Data
 public class BaseEntity implements Serializable {
+    @TableId(type = IdType.AUTO)
     private Long id;
     protected Date createAt;
     protected Date updateAt;

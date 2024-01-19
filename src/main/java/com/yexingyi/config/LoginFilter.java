@@ -36,39 +36,35 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // request.getSession().removeAttribute(Constants.KAPTCHA_SESSION_KEY);
 
         if (request.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
-            // 处理 JSON 格式的登录请求
             Map<String, String> loginData = new HashMap<>(16);
             try {
                 loginData = new ObjectMapper().readValue(request.getInputStream(), Map.class);
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                // 验证验证码
-                // String code = loginData.get("code");
-                // checkCode(code, verifyCode);
             }
 
-            // 获取用户名和密码
-            String username = loginData.get(getUsernameParameter());
-            String password = loginData.get(getPasswordParameter());
-            if (username == null) {
-                username = "";
+            String username = loginData.get("username");
+            String password = loginData.get("password");
+            String inputCode = loginData.get("code");
+
+            if (inputCode != null) {
+                // 验证码登录逻辑
+                String sessionCode = (String) request.getSession().getAttribute(username);
+                if (inputCode.equals(sessionCode)) {
+                    UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, null);
+                    setDetails(request, authRequest);
+                    return this.getAuthenticationManager().authenticate(authRequest);
+                } else {
+                    throw new AuthenticationServiceException("验证码不正确");
+                }
+            } else if (password != null) {
+                // 账号密码登录逻辑
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+                setDetails(request, authRequest);
+                return this.getAuthenticationManager().authenticate(authRequest);
+            } else {
+                throw new AuthenticationServiceException("缺少必要的登录信息");
             }
-            if (password == null) {
-                password = "";
-            }
-            username = username.trim();
-
-            // 创建身份验证请求
-            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-            setDetails(request, authRequest);
-
-            // 注册新会话
-            User user = new User();
-            user.setUsername(username);
-            sessionRegistry.registerNewSession(request.getSession(true).getId(), user);
-
-            return this.getAuthenticationManager().authenticate(authRequest);
         } else {
             // 处理普通表单提交的登录请求，继续调用父类的方法
             // checkCode(request.getParameter("code"), verifyCode);

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 叶倖燚
@@ -42,18 +43,22 @@ public class UserService implements UserDetailsService {
     }
 
     public ResponseMsg registerUser(User user) {
-        if (userDao.findByUsername(user.getUsername()) != null) {
+        if (userDao.getUserByName(user.getUsername()).size()!=0) {
             return ResponseMsg.error("用户名已存在");
         }
         String encode = passwordEncoder.encode(user.getPassword());
         user.setPassword(encode);
         user.setCreateAt(new Date());
         user.setUpdateAt(new Date());
+        userDao.insert(user);
         return ResponseMsg.ok("注册成功");
     }
 
 
     public ResponseMsg updateUser(User user) {
+        if (userDao.getUserByName(user.getUsername()).size()!=0&& !Objects.equals(userDao.getUserByName(user.getUsername()).get(0).getId(), user.getId())) {
+            return ResponseMsg.error("用户名已存在");
+        }
         user.update();
         if (userDao.updateById(user)>0){
             return ResponseMsg.ok("更新资料成功");

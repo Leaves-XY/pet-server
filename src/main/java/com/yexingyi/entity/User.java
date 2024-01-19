@@ -23,7 +23,7 @@ public class User extends BaseEntity  implements UserDetails {
     /**
      * 账号名
      */
-    private String name;
+    private String username;
 
     /**
      * 手机号码
@@ -38,10 +38,6 @@ public class User extends BaseEntity  implements UserDetails {
     @Getter(value = AccessLevel.NONE)
     private Boolean enabled=true;
 
-    /**
-     * 用户名
-     */
-    private String username;
 
     /**
      * 密码
