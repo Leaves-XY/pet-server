@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.kaiyu</groupId>
-    <artifactId>dorm-admin</artifactId>
+    <artifactId>pet-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>pet-server</name>
     <description>PetServer</description>

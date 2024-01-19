@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 
 /**
@@ -105,16 +106,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/pet/**").permitAll()
+
+                .antMatchers("/pet/**").permitAll()
+                .antMatchers("/pet/user/register").permitAll()
                 .antMatchers("/pet/repair/**").permitAll()
-                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-                    @Override
-                    public <O extends FilterSecurityInterceptor> O postProcess(O object) {
-                        object.setAccessDecisionManager(customUrlDecisionManager);
-                        object.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource);
-                        return object;
-                    }
-                })
+                .anyRequest().authenticated()
+                .and()
+                .exceptionHandling()
+                // 当用户未登录尝试访问受保护资源时，返回403
+                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied"))
+
+//                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+//                    @Override
+//                    public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+//                        object.setAccessDecisionManager(customUrlDecisionManager);
+//                        object.setSecurityMetadataSource(customFilterInvocationSecurityMetadataSource);
+//                        return object;
+//                    }
+//                })
+
                 .and()
                 .logout()
                 .logoutUrl("/pet/logout")
